@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Code da Presença</title>
+</head>
+<body>
+  <h1>QR Code da Presença - Aula Atual</h1>
+  <button onclick="gerarQRCode()">Gerar novo QR Code</button>
+  <div id="qrcode-container" style="margin-top:20px;">
+    <p>Aguardando geração do QR Code...</p>
+  </div>
+
+  <script>
+    async function gerarQRCode() {
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = '<p>Gerando QR Code...</p>';
+
+      try {
+        const response = await fetch('/api/qrcode');
+        const data = await response.json();
+
+        if (data.sucesso) {
+          container.innerHTML = `
+            <p>Token de presença: <b>${data.token}</b></p>
+            <img src="${data.qrCodeDataUrl}" alt="QR Code da presença" style="max-width:300px;"/>
+          `;
+        } else {
+          container.innerHTML = '<p>Erro ao gerar QR Code.</p>';
+        }
+      } catch (error) {
+        container.innerHTML = '<p>Erro na requisição: ' + error + '</p>';
+      }
+    }
+
+    // Gera o primeiro QR Code automaticamente ao carregar a página
+    window.onload = gerarQRCode;
+  </script>
+</body>
+</html>
